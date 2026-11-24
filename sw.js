@@ -1,6 +1,6 @@
 /* Fractal Foundry offline cache.
    Raise VERSION each time you upload a new build so players get the update. */
-const VERSION = 'ff-v1';
+const VERSION = 'ff-v2';
 const FILES = [
   './',
   './index.html',
@@ -27,7 +27,10 @@ self.addEventListener('activate', (e) => {
 // Everything else: cache first.
 self.addEventListener('fetch', (e) => {
   const req = e.request;
-  if (req.method !== 'GET' || new URL(req.url).origin !== location.origin) return;
+  const url = new URL(req.url);
+  if (req.method !== 'GET' || url.origin !== location.origin) return;
+  // The Limitless Mind app lives under /limitless/ and is not part of the game's offline cache.
+  if (url.pathname.includes('/limitless/')) return;
   if (req.mode === 'navigate') {
     e.respondWith(
       fetch(req)
